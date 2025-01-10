@@ -6,17 +6,21 @@ import React, { useState, useCallback } from 'react';
 
     const VitalSigns = () => {
       const [isPlaying, setIsPlaying] = useState(false);
+      const [isPaused, setIsPaused] = useState(false);
 
       const handlePlay = useCallback(() => {
         setIsPlaying(true);
+        setIsPaused(false);
       }, []);
 
       const handlePause = useCallback(() => {
         setIsPlaying(false);
+        setIsPaused(true);
       }, []);
 
       const handleStop = useCallback(() => {
         setIsPlaying(false);
+        setIsPaused(false);
       }, []);
 
       const chartData = {
@@ -40,10 +44,30 @@ import React, { useState, useCallback } from 'react';
             onStop={handleStop}
           />
           <div className="charts-container">
-            <SignalChart title="ECG Ch1" data={chartData} isPlaying={isPlaying} />
-            <SignalChart title="ECG Ch2" data={chartData} isPlaying={isPlaying} />
-            <SignalChart title="SpO2" data={chartData} isPlaying={isPlaying} />
-            <SignalChart title="Resp" data={chartData} isPlaying={isPlaying} />
+            <SignalChart
+              title="ECG Ch1"
+              data={chartData}
+              isPlaying={isPlaying}
+              isPaused={isPaused}
+            />
+            <SignalChart
+              title="ECG Ch2"
+              data={chartData}
+              isPlaying={isPlaying}
+              isPaused={isPaused}
+            />
+            <SignalChart
+              title="SpO2"
+              data={chartData}
+              isPlaying={isPlaying}
+              isPaused={isPaused}
+            />
+            <SignalChart
+              title="Resp"
+              data={chartData}
+              isPlaying={isPlaying}
+              isPaused={isPaused}
+            />
           </div>
           <Metrics />
         </div>

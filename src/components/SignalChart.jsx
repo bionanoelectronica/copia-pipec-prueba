@@ -22,9 +22,8 @@ import React, { useState, useEffect, useRef } from 'react';
       Legend
     );
 
-    const SignalChart = ({ title, data: initialData }) => {
+    const SignalChart = ({ title, data: initialData, isPlaying, isPaused }) => {
       const [data, setData] = useState(initialData);
-      const [isPlaying, setIsPlaying] = useState(false);
       const chartRef = useRef(null);
       const animationFrameRef = useRef(null);
 
@@ -33,16 +32,18 @@ import React, { useState, useEffect, useRef } from 'react';
       };
 
       const updateChart = () => {
-        const newData = generateRandomData();
-        setData((prevData) => ({
-          ...prevData,
-          datasets: [
-            {
-              ...prevData.datasets[0],
-              data: newData,
-            },
-          ],
-        }));
+        if (!isPaused) {
+          const newData = generateRandomData();
+          setData((prevData) => ({
+            ...prevData,
+            datasets: [
+              {
+                ...prevData.datasets[0],
+                data: newData,
+              },
+            ],
+          }));
+        }
 
         if (isPlaying) {
           animationFrameRef.current = requestAnimationFrame(updateChart);
@@ -57,7 +58,7 @@ import React, { useState, useEffect, useRef } from 'react';
         }
 
         return () => cancelAnimationFrame(animationFrameRef.current);
-      }, [isPlaying]);
+      }, [isPlaying, isPaused]);
 
       useEffect(() => {
         const chart = chartRef.current;
