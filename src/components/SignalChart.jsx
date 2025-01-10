@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
     import { Line } from 'react-chartjs-2';
     import {
       Chart as ChartJS,
@@ -22,9 +22,66 @@ import React from 'react';
       Legend
     );
 
-    const SignalChart = ({ title, data }) => {
+    const SignalChart = ({ title, data: initialData }) => {
+      const [data, setData] = useState(initialData);
+      const [isPlaying, setIsPlaying] = useState(false);
+      const chartRef = useRef(null);
+      const animationFrameRef = useRef(null);
+
+      const generateRandomData = () => {
+        return Array.from({ length: 50 }, () => Math.floor(Math.random() * 100));
+      };
+
+      const updateChart = () => {
+        const newData = generateRandomData();
+        setData((prevData) => ({
+          ...prevData,
+          datasets: [
+            {
+              ...prevData.datasets[0],
+              data: newData,
+            },
+          ],
+        }));
+
+        if (isPlaying) {
+          animationFrameRef.current = requestAnimationFrame(updateChart);
+        }
+      };
+
+      useEffect(() => {
+        if (isPlaying) {
+          animationFrameRef.current = requestAnimationFrame(updateChart);
+        } else {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+
+        return () => cancelAnimationFrame(animationFrameRef.current);
+      }, [isPlaying]);
+
+      useEffect(() => {
+        const chart = chartRef.current;
+        if (chart) {
+          setData({
+            labels: Array.from({ length: 50 }, (_, i) => i.toString()),
+            datasets: [
+              {
+                label: 'Signal Data',
+                data: generateRandomData(),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: '#283593',
+                borderWidth: 1,
+              },
+            ],
+          });
+        }
+      }, [title]);
+
       const options = {
         responsive: true,
+        animation: {
+          duration: 0,
+        },
         plugins: {
           legend: {
             display: false,
@@ -54,7 +111,7 @@ import React from 'react';
 
       return (
         <div className="signal-chart">
-          <Line options={options} data={data} />
+          <Line ref={chartRef} options={options} data={data} />
         </div>
       );
     };
