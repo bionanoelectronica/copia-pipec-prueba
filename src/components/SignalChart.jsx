@@ -26,6 +26,7 @@ import React, { useState, useEffect, useRef } from 'react';
       const [data, setData] = useState(initialData);
       const chartRef = useRef(null);
       const animationFrameRef = useRef(null);
+      const dataGenerationIntervalRef = useRef(null);
 
       const generateRandomData = () => {
         return Array.from({ length: 50 }, () => Math.floor(Math.random() * 100));
@@ -44,20 +45,16 @@ import React, { useState, useEffect, useRef } from 'react';
             ],
           }));
         }
-
-        if (isPlaying) {
-          animationFrameRef.current = requestAnimationFrame(updateChart);
-        }
       };
 
       useEffect(() => {
         if (isPlaying) {
-          animationFrameRef.current = requestAnimationFrame(updateChart);
+          dataGenerationIntervalRef.current = setInterval(updateChart, 500);
         } else {
-          cancelAnimationFrame(animationFrameRef.current);
+          clearInterval(dataGenerationIntervalRef.current);
         }
 
-        return () => cancelAnimationFrame(animationFrameRef.current);
+        return () => clearInterval(dataGenerationIntervalRef.current);
       }, [isPlaying, isPaused]);
 
       useEffect(() => {
@@ -72,6 +69,7 @@ import React, { useState, useEffect, useRef } from 'react';
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 borderColor: '#283593',
                 borderWidth: 1,
+                pointRadius: 0,
               },
             ],
           });
